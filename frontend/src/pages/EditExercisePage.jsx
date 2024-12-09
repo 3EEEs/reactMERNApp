@@ -1,74 +1,27 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import ExerciseForm from "../components/ExerciseForm";
+import { fetchExercise, updateExercise } from "../api";
 
-const EditExercisePage = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { exercise } = location.state;
+const EditExercisePage = ({ match }) => {
+  const [exercise, setExercise] = useState(null);
 
-  const [formData, setFormData] = useState(exercise);
+  useEffect(() => {
+    fetchExercise(match.params.id).then((data) => setExercise(data));
+  }, [match.params.id]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handleSave = (updatedExercise) => {
+    updateExercise(match.params.id, updatedExercise).then(() => {
+      // redirect or show success message
+    });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.put(`/exercises/${formData._id}`, formData);
-      alert("Exercise updated successfully!");
-      navigate("/");
-    } catch (error) {
-      alert("Error updating exercise!");
-    }
-  };
+  if (!exercise) return <div>Loading...</div>;
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>Name:</label>
-      <input
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        required
-      />
-
-      <label>Reps:</label>
-      <input
-        name="reps"
-        type="number"
-        value={formData.reps}
-        onChange={handleChange}
-        required
-      />
-
-      <label>Weight:</label>
-      <input
-        name="weight"
-        type="number"
-        value={formData.weight}
-        onChange={handleChange}
-        required
-      />
-
-      <label>Unit:</label>
-      <select name="unit" value={formData.unit} onChange={handleChange}>
-        <option value="kgs">kgs</option>
-        <option value="lbs">lbs</option>
-      </select>
-
-      <label>Date:</label>
-      <input
-        name="date"
-        value={formData.date}
-        onChange={handleChange}
-        required
-      />
-
-      <button type="submit">Save</button>
-    </form>
+    <div>
+      <h1>Edit Exercise</h1>
+      <ExerciseForm exercise={exercise} onSave={handleSave} />
+    </div>
   );
 };
 

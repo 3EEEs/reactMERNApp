@@ -1,18 +1,28 @@
 import express from "express";
-import cors from "cors"; // Importing cors
-import { router as ordersRouter } from "./routes/orders.mjs";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import exercisesRouter from "./routes/exercises.mjs";
+import cors from "cors";
+
+dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+const MONGODB_CONNECT_STRING = process.env.MONGODB_CONNECT_STRING;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use("/api/orders", ordersRouter);
+mongoose
+  .connect(MONGODB_CONNECT_STRING, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-// Start the server
-const PORT = process.env.PORT || 5173;
-app.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`),
-);
+app.use("/exercises", exercisesRouter);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

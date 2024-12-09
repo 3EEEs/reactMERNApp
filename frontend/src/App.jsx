@@ -1,19 +1,20 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Header from "./components/Header";
 import HomePage from "./pages/HomePage";
-import EditExercisePage from "./pages/EditExercisePage";
 import CreateExercisePage from "./pages/CreateExercisePage";
+import EditExercisePage from "./pages/EditExercisePage";
+import "./App.css";
 
 const App = () => {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/edit/:id" element={<EditExercisePage />} />
-        <Route path="/create" element={<CreateExercisePage />} />
-      </Routes>
+      <Header />
+      <Switch>
+        <Route path="/" exact component={HomePage} />
+        <Route path="/create" component={CreateExercisePage} />
+        <Route path="/edit/:id" component={EditExercisePage} />
+      </Switch>
     </Router>
   );
 };
